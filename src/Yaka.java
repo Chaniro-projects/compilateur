@@ -15,8 +15,6 @@ public class Yaka implements Constante, YakaConstants {
   public static String identPrecedent1;
   public static int lastType1;
   public static String lastNomFonc;
-  public static int cptNbParam;
-  public static int rangParam;
 
   public static void main(String args[]) {
     java.io.InputStream input;
@@ -53,7 +51,7 @@ public class Yaka implements Constante, YakaConstants {
   static final public void analyse() throws ParseException {
     jj_consume_token(PROGRAMME);
     jj_consume_token(ident);
-        yvmasm.debutASM();
+                yvmasm.debutASM();
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -82,11 +80,13 @@ public class Yaka implements Constante, YakaConstants {
     jj_consume_token(FONCTION);
     jj_consume_token(ident);
                 lastNomFonc=YakaTokenManager.identLu;
-                declaration.addFonction(lastNomFonc, GLOBAUX, lastType, Token.beginLine);
+                declaration.addFonction(lastNomFonc, lastType, Token.beginLine);
+                yvmasm.nomFonctionASM(lastNomFonc);
     paramForms();
     bloc();
     jj_consume_token(FFONCTION);
-                yvmasm.fermeblocASM(cptNbParam);
+                yvmasm.fermeblocASM(tabIdent.getNbParam()*2);
+                tabIdent.affiche();
   }
 
   static final public void paramForms() throws ParseException {
@@ -121,8 +121,6 @@ public class Yaka implements Constante, YakaConstants {
     type();
     jj_consume_token(ident);
                 declaration.addFonctionParam(YakaTokenManager.identLu,lastType, Token.beginLine);
-                System.out.println(YakaTokenManager.identLu+"\u005cn");
-                cptNbParam++;
   }
 
   static final public void bloc() throws ParseException {
@@ -227,7 +225,6 @@ public class Yaka implements Constante, YakaConstants {
     type();
     jj_consume_token(ident);
         declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);
-        System.out.println(YakaTokenManager.identLu+"\u005cn");
     label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -240,7 +237,7 @@ public class Yaka implements Constante, YakaConstants {
       }
       jj_consume_token(41);
       jj_consume_token(ident);
-                 declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);System.out.println(YakaTokenManager.identLu+"\u005cn");
+                 declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);
     }
     jj_consume_token(43);
   }
@@ -327,11 +324,13 @@ public class Yaka implements Constante, YakaConstants {
     jj_consume_token(RETOURNE);
     expression();
                 expression.evaluationReturnFonc(lastNomFonc, Token.beginLine);
+                yvmasm.ireturnASM(tabIdent.chercheIdent(lastNomFonc, GLOBAUX, Token.beginLine).getTailleTabParam()*2);
   }
 
   static final public void affectation() throws ParseException {
     jj_consume_token(ident);
                  identPrecedent=YakaTokenManager.identLu;
+                System.out.println("AFFECTATIONJJ\u005cn");
                 if(!tabIdent.existeIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine)){
                         System.out.println("\u005cn"+YakaTokenManager.identLu+" n'existe pas dans la table des identificateurs ERREUR ligne : "+Token.beginLine+" \u005cn");
                         expression.empileOperande(ERREUR);
@@ -343,14 +342,13 @@ public class Yaka implements Constante, YakaConstants {
     expression();
                 expression.evaluationExpr(Token.beginLine);
                 yvmasm.istoreASM(declaration.returnOffset(identPrecedent, Token.beginLine, LOCAUX));
-                tabIdent.affiche();
   }
 
   static final public void lecture() throws ParseException {
     jj_consume_token(LIRE);
     jj_consume_token(40);
     jj_consume_token(ident);
-                 yvmasm.lireEntASM(tabIdent.chercheIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine).getVal());
+                 yvmasm.lireEntASM(tabIdent.chercheIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine).getOffset());
     jj_consume_token(42);
   }
 
@@ -534,25 +532,16 @@ public class Yaka implements Constante, YakaConstants {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case entier:
       jj_consume_token(entier);
-        expression.empileOperande(INT);
-        yvmasm.iconstASM(YakaTokenManager.entierLu);
+                expression.empileOperande(INT);
+                yvmasm.iconstASM(YakaTokenManager.entierLu);
       break;
     case ident:
       jj_consume_token(ident);
-        if(tabIdent.existeIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine)){
-                if(tabIdent.chercheIdent(YakaTokenManager.identLu,LOCAUX, Token.beginLine).getType()==INT){
-                        expression.empileOperande(INT);
+                if(tabIdent.typeVarGlobaux(YakaTokenManager.identLu)){
+                        lastNomFonc=YakaTokenManager.identLu;
+                        expression.affectation(YakaTokenManager.identLu, GLOBAUX, Token.beginLine);
                 }else{
-                        expression.empileOperande(BOOL);
-                }
-                if(tabIdent.typeConstLocaux(YakaTokenManager.identLu)){
-                        yvmasm.iconstASM(tabIdent.chercheIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine).getVal());
-                }else{
-                        yvmasm.iloadASM(declaration.returnOffset(YakaTokenManager.identLu, LOCAUX, Token.beginLine));
-                        }
-                }else{
-                        System.out.println("\u005cn"+YakaTokenManager.identLu+" n'existe pas dans la table des identificateurs ERREUR ligne : "+Token.beginLine+" \u005cn");
-                        expression.empileOperande(ERREUR);
+                        expression.affectation(YakaTokenManager.identLu, LOCAUX, Token.beginLine);
                 }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case 40:
@@ -582,6 +571,7 @@ public class Yaka implements Constante, YakaConstants {
 
   static final public void argumentsFonction() throws ParseException {
     jj_consume_token(40);
+                expression.empileNbParam();
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VRAI:
     case FAUX:
@@ -591,8 +581,7 @@ public class Yaka implements Constante, YakaConstants {
     case 40:
     case 52:
       expression();
-                rangParam=1;
-                expression.controleParametre(lastNomFonc, GLOBAUX,rangParam, Token.beginLine);
+                expression.controleParametre(lastNomFonc,expression.getpileParametre().peek()-1, Token.beginLine);
       label_10:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -604,9 +593,10 @@ public class Yaka implements Constante, YakaConstants {
           break label_10;
         }
         jj_consume_token(41);
+                expression.incrementeSommetParam();
+                System.out.println(expression.getpileParametre().peek());
         expression();
-                rangParam++;
-                expression.controleParametre(lastNomFonc, GLOBAUX,rangParam, Token.beginLine);
+                expression.controleParametre(lastNomFonc,expression.getpileParametre().peek()-1, Token.beginLine);
       }
       break;
     default:
@@ -614,8 +604,8 @@ public class Yaka implements Constante, YakaConstants {
       ;
     }
     jj_consume_token(42);
-                expression.evaluationNbParam(lastNomFonc,cptNbParam, Token.beginLine);
-                cptNbParam=0;
+                expression.evaluationNbParam(lastNomFonc, Token.beginLine);
+                yvmasm.callASM(lastNomFonc);
   }
 
   static final public void opRel() throws ParseException {

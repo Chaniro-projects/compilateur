@@ -14,7 +14,7 @@ public class TabIdent implements Constante{
 	 */
 	public TabIdent(int taille) {
 		globaux = new HashMap<String,Ident>(taille);
-		locaux = new HashMap<String,Ident>(taille);
+		setLocaux(new HashMap<String,Ident>(taille));
 	}
 	
 	/**
@@ -26,13 +26,13 @@ public class TabIdent implements Constante{
 	 *	@return	l'Ident associe a la cle s'il existe, sinon message d'erreur
 	 */
 	public Ident chercheIdent(String cle,  int natureIdent, int ligne) {
-		Ident ident = null;
+		Ident ident = new Ident(cle, natureIdent);
 		switch(natureIdent){
 			case GLOBAUX:
 				ident = globaux.get(cle);
 				return ident;
 			case LOCAUX:
-				ident = locaux.get(cle);
+				ident = getLocaux().get(cle);
 				return ident;
 		}
 
@@ -54,16 +54,18 @@ public class TabIdent implements Constante{
 			case GLOBAUX:
 				return globaux.containsKey(cle);
 			case LOCAUX:
-				return locaux.containsKey(cle);	
+				System.out.println(cle+" "+ligne+"\n");
+				return getLocaux().containsKey(cle);
+			default:
+				System.out.println(" ERREUR existeIdent() : l'ident de nom: "+cle+" n'est dans aucune des tables de locaux ou globaux, ligne "+ligne+"\n");
+				return false;
 		}
-		System.out.println(" ERREUR existeIdent() : l'ident de nom: "+cle+" n'est dans aucune des tables de locaux ou globaux, ligne "+ligne+"\n");
-		return false;
 		
 	}
 	
 	
 	/**
-	 * La methode range l'IdenHashMap<String,Ident>t dans la table d'Ident 
+	 * La methode range l'Ident dans la table d'Ident 
 	 *
 	 *	@param	cle : la cle de l'identificateur
 	 *	@param	valeur: l'Ident a stocker dans la tabIdent
@@ -76,7 +78,7 @@ public class TabIdent implements Constante{
 				globaux.put(cle, valeur);
 				break;
 			case LOCAUX:
-				locaux.put(cle,  valeur);
+				getLocaux().put(cle,  valeur);
 				break;	
 		}
 		
@@ -92,8 +94,18 @@ public class TabIdent implements Constante{
 	public int getNbVarLocal() {
 		int nb = 0;
 		
-		for(String key : locaux.keySet())
-			if(locaux.get(key).getType()<0)
+		for(String key : getLocaux().keySet())
+			if(getLocaux().get(key).getOffset()<0)
+				nb++;
+		
+		return nb;
+	}
+	
+	public int getNbParam() {
+		int nb = 0;
+		
+		for(String key : getLocaux().keySet())
+			if(getLocaux().get(key).getOffset()>=4)
 				nb++;
 		
 		return nb;
@@ -125,7 +137,7 @@ public class TabIdent implements Constante{
 			System.out.println(e.getKey() + " = " + e.getValue().natureId+ " resultat :"+e.getValue().resultat);
 		}
 		System.out.println("}\nLocaux\n");
-		for(Entry<String, Ident> e : locaux.entrySet()) {
+		for(Entry<String, Ident> e : getLocaux().entrySet()) {
 			System.out.println(e.getKey() + " = " + e.getValue().type+" "+e.getValue().offset);
 		}
 		System.out.println("}\n");
@@ -138,7 +150,7 @@ public class TabIdent implements Constante{
 	 *	
 	 */
 	public boolean typeVarLocaux(String nom){
-		if (locaux.get(nom) instanceof IdVar){
+		if (getLocaux().get(nom) instanceof IdVar){
 			return true;
 		}else{
 			return false;
@@ -152,7 +164,7 @@ public class TabIdent implements Constante{
 	 *	
 	 */
 	public boolean typeVarGlobaux(String nom){
-		if (globaux.get(nom) instanceof IdVar){
+		if (globaux.get(nom) instanceof IdFonc){
 			return true;
 		}else{
 			return false;
@@ -166,25 +178,25 @@ public class TabIdent implements Constante{
 	 *	
 	 */
 	public boolean typeConstLocaux(String nom){
-		if (locaux.get(nom) instanceof IdConst){
+		if (getLocaux().get(nom) instanceof IdConst){
 			return true;
 		}else{
 			return false;
 		}
 	}
 	
+	
 	/**
-	 * La methode rend le type de la constante BOOLEEN ou ENTIER en global
+	 * Getter et setter de la table des variables locaux
 	 *
-	 *	@return	nom : le nom de la constante
 	 *	
 	 */
-	public boolean typeConstGlobaux(String nom){
-		if (globaux.get(nom) instanceof IdConst){
-			return true;
-		}else{
-			return false;
-		}
+	public HashMap<String,Ident> getLocaux() {
+		return locaux;
+	}
+
+	public void setLocaux(HashMap<String,Ident> locaux) {
+		this.locaux = locaux;
 	}
 	
 }

@@ -1,7 +1,7 @@
 
 
 public interface Constante {
-
+	/**Toutes les constantes utilisés permettent de s'affranchir de la comparaison de String*/
 	public int F = 0;
 	public int V =-1;
 	public int INT = 1;

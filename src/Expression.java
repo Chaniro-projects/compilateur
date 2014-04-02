@@ -4,10 +4,13 @@ import java.util.Stack;
 
 public class Expression implements Constante{
 	
-	Stack<Integer> pileOperande= new Stack<Integer>();
+	static Stack<Integer> pileOperande= new Stack<Integer>();
 	Stack<Integer> pileOperateur= new Stack<Integer>();
+	Stack<Integer> pileParametre= new Stack<Integer>();
 	
 		public Expression(){
+			/**Pour eviter que la pile des paramtres ne soit pas vide*/
+			pileParametre.push(0);
 			
 		}
 	
@@ -15,7 +18,7 @@ public class Expression implements Constante{
 		 * Empiler une operande dans la pile des operandes
 		 * @param val valeur de l'operande
 		 */
-		public void empileOperande(int val ){
+		public static void empileOperande(int val ){
 			pileOperande.push(val);
 		}
 		
@@ -290,9 +293,10 @@ public class Expression implements Constante{
 			}
 		}
 		
-		public void controleParametre(String nameFonc, int type, int cpt, int ligne){
+		public void controleParametre(String nameFonc, int cpt, int ligne){
 			int op = pileOperande.pop();
 			Ident id = Yaka.tabIdent.chercheIdent(nameFonc, Constante.GLOBAUX, ligne); 
+			System.out.println("CONTROLEPARAMETRE\n");
 
 			if(op!=id.getParam(cpt)){
 				switch (op){
@@ -307,13 +311,60 @@ public class Expression implements Constante{
 			}
 		}
 		
-		public void evaluationNbParam(String nameFonc,int cpt, int ligne){
+		public void empileNbParam(){
+			pileParametre.push(1);
+		}
+		
+		public void incrementeSommetParam(){
+			int  p =pileParametre.pop();
+			p++;
+			pileParametre.push(p);
+		}
+		
+		public void evaluationNbParam(String nameFonc, int ligne){
 			Ident id = Yaka.tabIdent.chercheIdent(nameFonc, Constante.GLOBAUX, ligne); 
-			if(cpt != id.getTailleTabParam()){
-				System.out.println("Le nombre de parametre dans la fonction "+nameFonc+" doit etre egale a "+cpt+" ERREUR ligne:"+ligne+"\n");
+			
+			if(pileParametre.pop() != id.getTailleTabParam()){
+				System.out.println("Le nombre de parametre dans la fonction "+nameFonc+" doit etre egale a "+id.getTailleTabParam()+" ERREUR ligne:"+ligne+"\n");
 			}
 		}
 		
+		public void affectation(String lastIdent, int typeVar, int ligne){
+			System.out.println("AFFECTATION\n");
+			switch(typeVar){
+				case LOCAUX:
+					if(Yaka.tabIdent.chercheIdent(lastIdent,LOCAUX, ligne).getType()==INT){
+				 		Expression.empileOperande(INT);
+				 	}else{
+				 		Expression.empileOperande(BOOL);
+				 	}
+				 	if(Yaka.tabIdent.typeConstLocaux(lastIdent)){
+				 			Yaka.yvmasm.iconstASM(Yaka.tabIdent.chercheIdent(lastIdent, LOCAUX, ligne).getVal());
+				 		}else{
+				 			Yaka.yvmasm.iloadASM(Declaration.returnOffset(lastIdent, ligne, LOCAUX));
+				 	}
+				 	break;
+
+				case GLOBAUX:
+					if(!Yaka.tabIdent.existeIdent(lastIdent,GLOBAUX, ligne)){
+						System.out.println("\n"+YakaTokenManager.identLu+" n'existe pas dans la table des identificateurs ERREUR ligne : "+ligne+" \n");
+						Expression.empileOperande(ERREUR);
+				 	}else{
+				 		Expression.empileOperande(Yaka.tabIdent.chercheIdent(lastIdent, GLOBAUX, ligne).getResultat());
+				 	}
+
+				 	break;
+					
+				default:
+					System.out.println("\n"+YakaTokenManager.identLu+" n'existe pas dans la table des identificateurs ERREUR ligne : "+ligne+" \n");
+					Expression.empileOperande(ERREUR);
+				break;
+			}
+		}
+		
+		public Stack<Integer> getpileParametre(){
+			return pileParametre;
+		}
 		
 		
 

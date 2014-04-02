@@ -18,10 +18,11 @@ public class YVMasm extends YVM {
 		Ecriture.ecrireString(FichierYVM,";");
 		super.debut();
 		Ecriture.ecrireString(FichierYVM,"extrn lirent:proc, ecrent:proc \n"+"extrn ecrbool:proc \nextrn ecrch:proc,ligsuiv:proc\n\n");
-		Ecriture.ecrireString(FichierYVM,".model SMALL\n.586\n\n.CODE\ndebut:\n\tSTARTUPCODE\n\n");
+		Ecriture.ecrireString(FichierYVM,".model SMALL\n.586\n\n.CODE\n");
 	}
 	
 	public void nomFoncASM(String f){
+		Ecriture.ecrireString(FichierYVM,"debut:\n\tSTARTUPCODE\n\n");
 		super.nomFonc(f);
 	}
 
@@ -44,7 +45,11 @@ public class YVMasm extends YVM {
 		Ecriture.ecrireString(FichierYVM,";");
 		super.iload(offset);
 		Ecriture.ecrireString(FichierYVM,"push word ptr [bp");
-		Ecriture.ecrireInt(FichierYVM,offset);
+		if(offset<0){
+			Ecriture.ecrireInt(FichierYVM,offset);
+		}else{
+			Ecriture.ecrireString(FichierYVM,"+"+offset);
+		}
 		Ecriture.ecrireString(FichierYVM,"]\n\n");
 	}
 	
@@ -107,7 +112,7 @@ public class YVMasm extends YVM {
 		case SUP:{
 			Ecriture.ecrireString(FichierYVM,";");
 			super.op_bin(c);
-			Ecriture.ecrireString(FichierYVM,"pop bx \npop ax \ncmp ax,bx \njge $+6 \npush -1 \njmp $+4 \npush 0 \n\n");
+			Ecriture.ecrireString(FichierYVM,"pop bx \npop ax \ncmp ax,bx \njle $+6 \npush -1 \njmp $+4 \npush 0 \n\n");
 			break;
 			}
 		case SUPEGAL:{
@@ -251,7 +256,7 @@ public class YVMasm extends YVM {
 	public void fermeblocASM(int param){
 		Ecriture.ecrireString(FichierYVM,";");
 		super.fermebloc(param);
-		Ecriture.ecrireString(FichierYVM,"leave\nret "+param+"\n");
+		Ecriture.ecrireString(FichierYVM,"leave\nret "+param+"\n\n\n");
 	}
 	
 	public void ireturnASM(int offset){
@@ -270,5 +275,9 @@ public class YVMasm extends YVM {
 		Ecriture.ecrireString(FichierYVM,";");
 		super.call(name);
 		Ecriture.ecrireString(FichierYVM,"call "+name+"\n");
+	}
+	
+	public void nomFonctionASM(String name){
+		super.nomFonction(name);
 	}
 }

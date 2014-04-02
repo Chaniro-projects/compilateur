@@ -238,6 +238,10 @@ public class YVM implements Constante{
 		public void call(String name){
 			Ecriture.ecrireString(FichierYVM,"call "+name+"\n");
 		}
+		
+		public void nomFonction(String name){
+			Ecriture.ecrireString(FichierYVM,name+" : \n");
+		}
 }
 
 
