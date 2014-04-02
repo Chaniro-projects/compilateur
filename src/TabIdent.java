@@ -126,7 +126,7 @@ public class TabIdent implements Constante{
 		}
 		System.out.println("}\nLocaux\n");
 		for(Entry<String, Ident> e : locaux.entrySet()) {
-			System.out.println(e.getKey() + " = " + e.getValue().type+" "+e.getValue().val);
+			System.out.println(e.getKey() + " = " + e.getValue().type+" "+e.getValue().offset);
 		}
 		System.out.println("}\n");
 	}
@@ -179,7 +179,7 @@ public class TabIdent implements Constante{
 	 *	@return	nom : le nom de la constante
 	 *	
 	 */
-	public boolean typeConst(String nom){
+	public boolean typeConstGlobaux(String nom){
 		if (globaux.get(nom) instanceof IdConst){
 			return true;
 		}else{

@@ -121,6 +121,7 @@ public class Yaka implements Constante, YakaConstants {
     type();
     jj_consume_token(ident);
                 declaration.addFonctionParam(YakaTokenManager.identLu,lastType, Token.beginLine);
+                System.out.println(YakaTokenManager.identLu+"\u005cn");
                 cptNbParam++;
   }
 
@@ -226,6 +227,7 @@ public class Yaka implements Constante, YakaConstants {
     type();
     jj_consume_token(ident);
         declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);
+        System.out.println(YakaTokenManager.identLu+"\u005cn");
     label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -238,7 +240,7 @@ public class Yaka implements Constante, YakaConstants {
       }
       jj_consume_token(41);
       jj_consume_token(ident);
-                 declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);
+                 declaration.addVariable(YakaTokenManager.identLu, lastType, LOCAUX);System.out.println(YakaTokenManager.identLu+"\u005cn");
     }
     jj_consume_token(43);
   }
@@ -341,6 +343,7 @@ public class Yaka implements Constante, YakaConstants {
     expression();
                 expression.evaluationExpr(Token.beginLine);
                 yvmasm.istoreASM(declaration.returnOffset(identPrecedent, Token.beginLine, LOCAUX));
+                tabIdent.affiche();
   }
 
   static final public void lecture() throws ParseException {
@@ -542,7 +545,7 @@ public class Yaka implements Constante, YakaConstants {
                 }else{
                         expression.empileOperande(BOOL);
                 }
-                if(tabIdent.typeConst(YakaTokenManager.identLu)){
+                if(tabIdent.typeConstLocaux(YakaTokenManager.identLu)){
                         yvmasm.iconstASM(tabIdent.chercheIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine).getVal());
                 }else{
                         yvmasm.iloadASM(declaration.returnOffset(YakaTokenManager.identLu, LOCAUX, Token.beginLine));

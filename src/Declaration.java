@@ -115,9 +115,8 @@ public class Declaration implements Constante{
 			System.out.println("\n attention la constante : "+ name +" a déjà été initialisée\n ligne : "+ligne+"\n");
 		}else{
 			
-			IdVar ident = new IdVar(name, Constante.LOCAUX, Constante.PARAM);
+			IdVar ident = new IdVar(name, Constante.LOCAUX, type);
 			/** on stocke d'abord le rang à la place de l'offset pour le modifer après*/
-			ident.setType(type);
 			ident.setOffset(rang);
 			Yaka.tabIdent.rangeIdent(name, ident, Constante.LOCAUX);
 			paramsName.add(name);

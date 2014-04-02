@@ -15,9 +15,9 @@ enter 0,0
 ;iload 0
 push word ptr [bp0]
 
-;istore -6
+;istore -4
 pop ax 
-mov word ptr [bp-6],ax
+mov word ptr [bp-4],ax
 
 ;iload 0
 push word ptr [bp0]

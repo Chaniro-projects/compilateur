@@ -6,18 +6,12 @@ import java.util.Stack;
 public class YVM implements Constante{
 	OutputStream FichierYVM ;
 	public Stack<Integer> pileIter =new Stack<Integer>();
-<<<<<<< HEAD
 	public Stack<Integer> pileCond =new Stack<Integer>();
 	int compteurIter = 0;
 	int compteurCond = 0;
 	int indexIter;
 	int indexCond;
 	
-=======
-	
-	public Stack<Integer> pileSi = new Stack<Integer>();
-	public int indexSi = 0;
->>>>>>> d1af652bc3fb8a7ad02ba0d0eb02e727b7cf2a31
 
 
 	
@@ -162,32 +156,12 @@ public class YVM implements Constante{
 			Ecriture.ecrireString(FichierYVM,"FAIT"+indexIter+":\n");
 		}
 		
-<<<<<<< HEAD
 		public void ifsi(){
 			Ecriture.ecrireString(FichierYVM,"FSI"+indexCond+":\n");
 		}
 		
 		public void isinon(){
 			Ecriture.ecrireString(FichierYVM,"SINON"+indexCond+":\n");
-=======
-		/*l'it�ration n'utilise que iffaux*/
-		public void iffaux(){
-			int s=0;
-			for(int i=0; i<pileIter.size(); i++){
-				s+=pileIter.get(i);
-			}
-			Ecriture.ecrireString(FichierYVM,"iffaux FAIT"+s+"\n");
-		}
-		
-		public void isi() {
-			indexSi++;
-			pileSi.add(indexSi);
-		}
-		
-		/*!*/
-		public void ifequ(String c){
-			Ecriture.ecrireString(FichierYVM,"ifequ "+c+"\n");
->>>>>>> d1af652bc3fb8a7ad02ba0d0eb02e727b7cf2a31
 		}
 		
 		public void fgoto(int choix){
