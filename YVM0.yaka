@@ -1,0 +1,23 @@
+entete
+ouvrePrinc 8
+iconst 10
+iconst 10
+iconst 2
+idiv 
+iadd 
+iconst 5
+idiv 
+istore -2
+iconst 3
+istore -2
+imul 
+iadd 
+iconst 10
+isub 
+iconst -1
+iconst -1
+istore -2
+istore -4
+iconst 4
+iadd 
+queue
