@@ -447,7 +447,16 @@ void valeur () : {}
  | <ident> 
  	{
  	
- 	
+ 	if(tabIdent.existeIdent(YakaTokenManager.identLu, GLOBAUX, Token.beginLine)){
+ 		if(tabIdent.chercheIdent(YakaTokenManager.identLu,GLOBAUX, Token.beginLine).resultat==INT){
+	 		expression.empileOperande(INT);
+	 	}else{
+	 		expression.empileOperande(BOOL);
+	 	}
+
+	 	//TODO: genere code ASM call fonction
+	 	
+ 	}
  	if(tabIdent.existeIdent(YakaTokenManager.identLu, LOCAUX, Token.beginLine)){
 	 	if(tabIdent.chercheIdent(YakaTokenManager.identLu,LOCAUX, Token.beginLine).getType()==INT){
 	 		expression.empileOperande(INT);
